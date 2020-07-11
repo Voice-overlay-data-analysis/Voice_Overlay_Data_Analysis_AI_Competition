@@ -26,7 +26,7 @@ l1 = file.readline()
 offset = 0
 wav_info = []
 for i in range(len(blocks)):
-    if i == 0 or i == 2 or i == 3 or i == 11:
+    if i in [0, 2, 3, 11]:
         wav_info.append([blocks[i][0], l1[offset : offset+blocks[0][2]]])
     elif i == 1:
         wav_info.append([blocks[i][0], int(ConvertWav(l1[offset : offset+blocks[i][2]], blocks[i][1]),16) + 8])

@@ -1,2 +1,4 @@
 
 *.wav
+data/submission.csv
+data/train_answer.csv
