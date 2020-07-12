@@ -36,4 +36,31 @@ for i in range(len(blocks)):
 
 wav_info = np.array(wav_info).reshape(-1, 2)
 
-l2 = file.readline()
+import librosa, librosa.display
+import matplotlib.pyplot as plt
+
+data, sr = librosa.load('./train_00000.wav', sr=16000)
+#sr = sampling rate, librosa는 별도로 sr를 설정하지 않으면 default로 22050
+#len(data) = Subchunk2Size / BitsPerSample = 32000 / 2byte(16bits)
+
+#원본음성파일 주파수
+time = np.linspace(0, len(data)/sr, len(data)) # time axis
+fig, ax1 = plt.subplots() # plot
+ax1.plot(time, data, color = 'b', label='speech waveform')
+ax1.set_ylabel("Amplitude") # y 축
+ax1.set_xlabel("Time [s]") # x 축
+plt.show()
+
+#MFCC : 입력된 신호에서 소리의 특징을 추출하는 기법
+#입력된 소리 전체를 대상으로 하는 것이 아니라, 일정 시간(구간)으로 나누어서
+#이 시간에 대한 스펙트럼을 분석하여 특징 추출
+
+mfcc = librosa.feature.mfcc(y=data, sr=sr)
+print(mfcc.shape) # ( 20, number_of_frames)
+plt.pcolor(mfcc) #히트맵(HeatMap) 그리기
+
+
+D = librosa.amplitude_to_db(librosa.stft(data[:]), ref=np.max)
+plt.plot(D.flatten())
+plt.show()
+
