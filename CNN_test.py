@@ -4,6 +4,8 @@ import librosa
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import train_test_split
+#import tensorflow as tf
+#from practice_model_fn import model_fn, train_fn, eval_fn, test_fn
 
 #======================================================
 #Load Dataset
@@ -36,51 +38,32 @@ label = np.array(label)
 data_path = np.array(data_path)
 
 #======================================================
-#Split Dataset
-#======================================================
-
-data_train, data_test, label_train, label_test = train_test_split(data, label, test_size=0.3, stratify=label, random_state=34)
-
-#======================================================
 #Data Preprocessing(MFCC) & Data Padding
 #======================================================
 
-mfcc_train = []
-mfcc_test = []
+mfcc = []
 
 max_padding = 0
-for i in range(len(data_train)):
-    res = librosa.feature.mfcc(y=data_train[i], sr=sr)
+for i in range(len(data)):
+    res = librosa.feature.mfcc(y=data[i], sr=sr)
     if max_padding < res.shape[1]:
         max_padding = res.shape[1]
-    mfcc_train.append(res)
+    mfcc.append(res)
 
 #Data padding
-for i in range(len(mfcc_train)):
-    mfcc_train[i] = np.hstack((mfcc_train[i], np.zeros((mfcc_train[i].shape[0], max_padding-mfcc_train[i].shape[1]))))
+for i in range(len(mfcc)):
+    mfcc[i] = np.hstack((mfcc[i], np.zeros((mfcc[i].shape[0], max_padding-mfcc[i].shape[1]))))
 #end
 
-max_padding = 0
-for i in range(len(data_test)):
-    res = librosa.feature.mfcc(y=data_test[i], sr=sr)
-    if max_padding < res.shape[1]:
-        max_padding = res.shape[1]
-    mfcc_test.append(res)
-
-for i in range(len(mfcc_test)):
-    mfcc_test[i] = np.hstack((mfcc_test[i], np.zeros((mfcc_test[i].shape[0], max_padding-mfcc_test[i].shape[1]))))
-
-mfcc_train = np.array(mfcc_train)
-mfcc_test = np.array(mfcc_test)
+mfcc = np.array(mfcc)
 
 #======================================================
 #Save data before Modeling
 #======================================================
 
-np.save("./practice_data_preprocessing_complete/mfcc_train.npy", mfcc_train)
-np.save("./practice_data_preprocessing_complete/mfcc_test.npy", mfcc_test)
-np.save("./practice_data_preprocessing_complete/label_train.npy", label_train)
-np.save("./practice_data_preprocessing_complete/label_test.npy", label_test)
+np.save("./practice_data_preprocessing_complete/data.npy", data)
+np.save("./practice_data_preprocessing_complete/mfcc.npy", mfcc)
+np.save("./practice_data_preprocessing_complete/label.npy", label)
 
 #======================================================
 #Load data for Modeling
@@ -88,13 +71,27 @@ np.save("./practice_data_preprocessing_complete/label_test.npy", label_test)
 
 data_path = "./practice_data_preprocessing_complete/"
 
-mfcc_train = np.load(data_path+'mfcc_train.npy')
-mfcc_test = np.load(data_path+'mfcc_test.npy')
-label_train = np.load(data_path+'label_train.npy')
-label_test = np.load(data_path+'label_test.npy')
+mfcc = np.load(data_path+'mfcc.npy')
+label = np.load(data_path+'label.npy')
 
 #======================================================
-#MLP Model
+#Split Dataset
 #======================================================
 
+mfcc, mfcc_test, label, label_test = train_test_split(mfcc, label, test_size=0.2, stratify=label, random_state=34)
+mfcc_train, mfcc_eval, label_train, label_eval = train_test_split(mfcc, label, test_size=0.25, stratify=label, random_state=34)
 
+# > train : eval : test = 3: 1: 1
+
+#======================================================
+#Modeling
+#======================================================
+
+dir_path = "./practice_model_res/"
+
+est = tf.estimator.Estimator(model_fn, model_dir=dir_path)
+est.train(train_fn)
+valid = est.evaluate(eval_fn)
+predict = est.predict(test_fn)
+
+#======================================================
