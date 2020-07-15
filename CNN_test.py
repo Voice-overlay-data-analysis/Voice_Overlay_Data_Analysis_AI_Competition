@@ -2,8 +2,6 @@ from module import ConvertWav
 import os
 import librosa
 import matplotlib.pyplot as plt
-import time
-from random import shuffle, seed
 import numpy as np
 from sklearn.model_selection import train_test_split
 
@@ -24,7 +22,7 @@ for folder in word_folder:
         continue
     i += 1
     file_list = [file for file in os.listdir(path) if file.endswith(".wav")]
-    for each in file_list[0:min(100, len(file_list))]:
+    for each in file_list[0 : min(100, len(file_list))]:
         data_path.append(path+each)
         file = open(data_path[-1], 'rb')
         l1 = file.readline()
@@ -49,15 +47,35 @@ data_train, data_test, label_train, label_test = train_test_split(data, label, t
 
 mfcc_train = []
 mfcc_test = []
-for i in range(len(data_train)):
-    mfcc_train.append(librosa.feature.mfcc(y=data_train[i], sr=sr))
-for i in range(len(data_test)):
-    mfcc_test.append(librosa.feature.mfcc(y=data_test[i], sr=sr))
 
-pad2d = lambda a, i: a[:, 0:i] if a.shape[1] > i else np.hstack((a.np.zeros((a.shape[0], i-a.shape[i]))))
+max_padding = 0
+for i in range(len(data_train)):
+    res = librosa.feature.mfcc(y=data_train[i], sr=sr)
+    if max_padding < res.shape[1]:
+        max_padding = res.shape[1]
+    mfcc_train.append(res)
+
+max_padding = 0
+for i in range(len(data_test)):
+    res = librosa.feature.mfcc(y=data_test[i], sr=sr)
+    if max_padding < res.shape[1]:
+        max_padding = res.shape[1]
+    mfcc_test.append(res)
 
 #======================================================
-#Save mfcc/label data before Modeling
+#Data Padding
+#======================================================
+
+for i in range(len(mfcc_train)):
+    mfcc_train[i] = np.hstack((mfcc_train[i], np.zeros((mfcc_train[i].shape[0], max_padding-mfcc_train[i].shape[1]))))
+for i in range(len(mfcc_test)):
+    mfcc_test[i] = np.hstack((mfcc_test[i], np.zeros((mfcc_test[i].shape[0], max_padding-mfcc_test[i].shape[1]))))
+
+mfcc_train = np.array(mfcc_train)
+mfcc_test = np.array(mfcc_test)
+
+#======================================================
+#Save data before Modeling
 #======================================================
 
 np.save("./practice_data_preprocessing_complete/mfcc_train.npy", mfcc_train)
