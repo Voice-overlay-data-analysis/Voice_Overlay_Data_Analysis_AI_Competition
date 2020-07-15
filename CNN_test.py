@@ -42,7 +42,7 @@ data_path = np.array(data_path)
 data_train, data_test, label_train, label_test = train_test_split(data, label, test_size=0.3, stratify=label, random_state=34)
 
 #======================================================
-#Data Preprocessing(MFCC)
+#Data Preprocessing(MFCC) & Data Padding
 #======================================================
 
 mfcc_train = []
@@ -55,6 +55,11 @@ for i in range(len(data_train)):
         max_padding = res.shape[1]
     mfcc_train.append(res)
 
+#Data padding
+for i in range(len(mfcc_train)):
+    mfcc_train[i] = np.hstack((mfcc_train[i], np.zeros((mfcc_train[i].shape[0], max_padding-mfcc_train[i].shape[1]))))
+#end
+
 max_padding = 0
 for i in range(len(data_test)):
     res = librosa.feature.mfcc(y=data_test[i], sr=sr)
@@ -62,12 +67,6 @@ for i in range(len(data_test)):
         max_padding = res.shape[1]
     mfcc_test.append(res)
 
-#======================================================
-#Data Padding
-#======================================================
-
-for i in range(len(mfcc_train)):
-    mfcc_train[i] = np.hstack((mfcc_train[i], np.zeros((mfcc_train[i].shape[0], max_padding-mfcc_train[i].shape[1]))))
 for i in range(len(mfcc_test)):
     mfcc_test[i] = np.hstack((mfcc_test[i], np.zeros((mfcc_test[i].shape[0], max_padding-mfcc_test[i].shape[1]))))
 
@@ -82,5 +81,20 @@ np.save("./practice_data_preprocessing_complete/mfcc_train.npy", mfcc_train)
 np.save("./practice_data_preprocessing_complete/mfcc_test.npy", mfcc_test)
 np.save("./practice_data_preprocessing_complete/label_train.npy", label_train)
 np.save("./practice_data_preprocessing_complete/label_test.npy", label_test)
+
+#======================================================
+#Load data for Modeling
+#======================================================
+
+data_path = "./practice_data_preprocessing_complete/"
+
+mfcc_train = np.load(data_path+'mfcc_train.npy')
+mfcc_test = np.load(data_path+'mfcc_test.npy')
+label_train = np.load(data_path+'label_train.npy')
+label_test = np.load(data_path+'label_test.npy')
+
+#======================================================
+#MLP Model
+#======================================================
 
 
