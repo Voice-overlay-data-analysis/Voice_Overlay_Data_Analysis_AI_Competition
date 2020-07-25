@@ -60,5 +60,14 @@ plt.ylabel('lable (Y)')
 """===============================================
 2. Logistic Regression의 Regularization(규제화)
 ==============================================="""
+data = make_classification(n_samples=100, n_features=10, n_informative=1, n_redundant=3, n_clusters_per_class=1, random_state=30, n_repeated=0)
+X = data[0]
+Y = data[1]
 
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, shuffle=True)
+
+reg_model = LogisticRegression(penalty='l1', C=1.5, solver='saga').fit(X_train, Y_train)
+#penalty : l1(Lasso), l2(Ridge), (default : l2)
+#C : 규제강도, 오차와 모델복잡도의 비율 (오차에 곱해짐)
+#C값이 높아지면 모델 복잡도에 덜 신경씀(규제 감소), 데이터를 정확하게 분류하지만 Overfitting이 일어날 수 있음
 
