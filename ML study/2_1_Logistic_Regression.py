@@ -71,3 +71,43 @@ reg_model = LogisticRegression(penalty='l1', C=1.5, solver='saga').fit(X_train, 
 #C : 규제강도, 오차와 모델복잡도의 비율 (오차에 곱해짐)
 #C값이 높아지면 모델 복잡도에 덜 신경씀(규제 감소), 데이터를 정확하게 분류하지만 Overfitting이 일어날 수 있음
 
+"""===============================================
+2. 유방암 데이터 실습
+==============================================="""
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+
+breast = load_breast_cancer()
+keys = breast.keys()
+X = breast['data']
+Y = breast['target']
+kind_of_label = breast['target_names']
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, shuffle=True)
+
+logistic_model = LogisticRegression(C=5).fit(X_train, Y_train)
+print("* train score : {}".format(logistic_model.score(X_train, Y_train)))
+print("* test score : {}".format(logistic_model.score(X_test, Y_test)))
+
+xaxis = np.linspace(1, 10, 10)
+train_score = []
+test_score = []
+for i in range(1, 11):
+    logistic_model = LogisticRegression(C=i).fit(X_train, Y_train)
+    train_score.append(logistic_model.score(X_train, Y_train))
+    test_score.append(logistic_model.score(X_test, Y_test))
+plt.plot (xaxis, train_score, c='b', marker='.')
+plt.plot(xaxis, test_score, c='r', marker='.')
+plt.xticks(np.arange(1, 11, 1))
+plt.ylim(0.9, 1.0)
+plt.xlabel("C value")
+plt.ylabel("Score")
+plt.title("Logistic Regression Regulation")
+
+
+"""===============================================
+3. SoftMax Regression(Multinomial Logistic Regrssion
+==============================================="""
+
+
