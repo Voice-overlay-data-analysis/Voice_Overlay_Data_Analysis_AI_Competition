@@ -23,7 +23,7 @@ plt.scatter(X, Y, marker="*", c=Y, edgecolors="k", s=200)
 #marker : 모양, c : 색깔, edgecolors : 테두리, s : 크기
 plt.xlabel('data')
 plt.ylabel('label')
-plt.title('Logistic Regression (Feature cnt : 1)')
+plt.title('Logistic Regression')
 
 #데이터 분리
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, shuffle=True)
@@ -40,7 +40,7 @@ acc = np.sum([1 if pred[i] == Y_test[i] else 0 for i in range(len(Y_test))]) / l
 print("* test_score : {}".format(acc))
 
 #시각화 - logistic 함수 그리기
-xaxis = np.linspace(-3, 3, 100)
+xaxis = np.linspace(X.min(), X.max(), 100)
 #x축 범위 설정
 res_hypothesis = weight[0][0]*xaxis + bias[0]
 #모델링을 통해 구한 hypothesis
@@ -60,6 +60,7 @@ plt.ylabel('lable (Y)')
 """===============================================
 2. Logistic Regression의 Regularization(규제화)
 ==============================================="""
+#x_feature 수가 많을수록 Overfitting 될 확률이 높아짐
 data = make_classification(n_samples=100, n_features=10, n_informative=1, n_redundant=3, n_clusters_per_class=1, random_state=30, n_repeated=0)
 X = data[0]
 Y = data[1]
@@ -104,10 +105,3 @@ plt.ylim(0.9, 1.0)
 plt.xlabel("C value")
 plt.ylabel("Score")
 plt.title("Logistic Regression Regulation")
-
-
-"""===============================================
-3. SoftMax Regression(Multinomial Logistic Regrssion
-==============================================="""
-
-

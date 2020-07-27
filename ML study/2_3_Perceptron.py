@@ -16,7 +16,7 @@ X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, shuffle
 
 perceptron_model = MLPClassifier(hidden_layer_sizes=()).fit(X_train, Y_train)
 #단일 퍼셉트론
-print("* train scroe : {}".format(perceptron_model.score(X_train, Y_train)))
+print("* train score : {}".format(perceptron_model.score(X_train, Y_train)))
 print("* test score : {}".format(perceptron_model.score(X_test, Y_test)))
 #단일 퍼셉트론은 xor(비선형문제)을 설명할 수없음
 #and, or(선형문제)는 해결 가능
